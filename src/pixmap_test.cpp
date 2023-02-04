@@ -1,5 +1,3 @@
-// Copyright 2021, Aline Normoyle, alinen
-
 #include <iostream>
 #include "image.h"
 using namespace std;
@@ -82,8 +80,8 @@ int main(int argc, char** argv)
    int x = (int) (0.5f * (image.height() - soup.height()));
    Image background = image.subimage(x, y, soup.width(), soup.height());
    background.save("background-test.png");
+
    Image blend = background.alphaBlend(soup, 0.5f);
    image.replace(blend, x, y);
    image.save("earth-blend-0.5.png");
 }
-

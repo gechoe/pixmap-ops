@@ -33,7 +33,7 @@ class Image {
   /** 
    * @brief Load the given filename 
    * @param filename The file to load, relative to the running directory
-   * @param flip Whether the file should flipped vertally when loaded
+   * @param flip Whether the file should flipped vertically when loaded
    * 
    * @verbinclude sprites.cpp
    */
@@ -44,7 +44,7 @@ class Image {
    * @param filename The file to load, relative to the running directory
    * @param flip Whether the file should flipped vertally before being saved
    */
-  bool save(const std::string& filename, bool flip = true) const;
+  bool save(const std::string& filename, bool flip = false) const;
 
   /** @brief Return the image width in pixels
    */
@@ -190,6 +190,8 @@ class Image {
 
  private:
    // todo
+   int widthW, heightH, num_chan = 3, des_chan = 3;
+   char* pic;
 };
 }  // namespace agl
 #endif  // AGL_IMAGE_H_
