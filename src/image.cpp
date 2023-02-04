@@ -196,7 +196,26 @@ Image Image::flipVertical() const {
 }
 
 Image Image::rotate90() const {
-  Image result(0, 0);
+  Image result(heightH, widthW);
+  int originalH = heightH - 1;
+
+  for (int i = 0; i < widthW; i++) {
+    for (int j = 0; j < heightH; j++) {
+      Pixel pix = get(i, j);
+      result.set(j, i, pix);
+    }
+  }
+
+  for (int j = 0; j < widthW; j++) {
+    for (int i = 0; i < heightH / 2; i++) {
+      Pixel pix = result.get(i, j);
+      Pixel otherPix = result.get(originalH, j);
+      result.set(i, j, otherPix);
+      result.set(originalH, j, pix);
+      originalH--;
+    }
+    originalH = heightH - 1;
+  }
   
   return result;
 }
@@ -246,7 +265,20 @@ void Image::replace(const Image& image, int startx, int starty) {
 }
 
 Image Image::swirl() const {
-  Image result(0, 0);
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      unsigned char holder = pix.r;
+      pix.r = pix.g;
+      pix.g = pix.b;
+      pix.b = pix.r;
+         
+      result.set(i, j, pix);
+    }
+  }
+
   return result;
 }
 
@@ -257,7 +289,7 @@ Image Image::add(const Image& other) const {
 }
 
 Image Image::subtract(const Image& other) const {
-  Image result(0, 0);
+  Image result(widthW, heightH);
    
   return result;
 }
@@ -307,9 +339,9 @@ Image Image::gammaCorrect(float gamma) const {
 
       // Scales back to pixel color range for pixel intensity by multiplying by
       // max intensity (255).
-      pix.r = gammaRed * 255;
-      pix.g = gammaGreen * 255;
-      pix.b = gammaBlue * 255;
+      pix.r = 255 * gammaRed;
+      pix.g = 255 * gammaGreen;
+      pix.b = 255 * gammaBlue;
          
       result.set(i, j, pix);
     }
@@ -343,7 +375,18 @@ Image Image::alphaBlend(const Image& other, float alpha) const {
 }
 
 Image Image::invert() const {
-  Image image(0, 0);
+  Image image(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      pix.r = (unsigned char)(255 - (int)pix.r);
+      pix.g = (unsigned char)(255 - (int)pix.b);
+      pix.b = (unsigned char)(255 - (int)pix.g);
+         
+      image.set(i, j, pix);
+    }
+  }
    
   return image;
 }
@@ -369,7 +412,7 @@ Image Image::grayscale() const {
 
 Image Image::colorJitter(int size) const {
   Image image(0, 0);
-  
+
   return image;
 }
 
