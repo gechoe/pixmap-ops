@@ -83,7 +83,6 @@ Image Image::resize(int w, int h) const {
 Image Image::flipHorizontal() const {
    Image result(0, 0);
    return result;
-
 }
 
 Image Image::flipVertical() const {
