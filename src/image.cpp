@@ -25,7 +25,7 @@ namespace agl {
 Image::Image() {
   widthW = 20;
   heightH = 20;
-  pic = new char[widthW * heightH * num_chan];;
+  pic = new char[widthW * heightH * num_chan];
 }
 
 // Constructor
