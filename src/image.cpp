@@ -106,7 +106,8 @@ bool Image::load(const std::string& filename, bool flip) {
 // Saves the file with the given name. Returns true if successful; False otherwise.
 bool Image::save(const std::string& filename, bool flip) const {
   stbi_flip_vertically_on_write(flip);
-  return stbi_write_png(filename.c_str(), widthW, heightH, num_chan, pic, widthW * des_chan);
+  return stbi_write_png(filename.c_str(), widthW, heightH, num_chan, pic,
+    widthW * des_chan);
 }
 
 // get
@@ -148,6 +149,8 @@ Image Image::resize(int w, int h) const {
   int locR, locC;
   float proportionR, proportionC;
 
+  // for loop to resize according to calculations with proportions taken into
+  // account.
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
       proportionR = (i / ((float)(h - 1))) * (float)(heightH - 1);
@@ -169,6 +172,10 @@ Image Image::flipHorizontal() const {
   Image result(widthW, heightH);
   int originalH = heightH - 1;
 
+  // for loop to flip image, for loop of width then height to make the flipping
+  // horizontally by pixels easier.
+  // Flipped by switching the ends first then switching and getting closer to
+  // the middle then repeating.
   for (int j = 0; j < widthW; j++) {
     for (int i = 0; i < heightH / 2; i++) {
       Pixel pix = get(i, j);
@@ -200,6 +207,7 @@ Image Image::subimage(int startx, int starty, int w, int h) const {
   Image sub(w, h);
   int locX, locY;
 
+  // for loop to get subimage within bounds.
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
       locX = i + startx;
@@ -214,15 +222,25 @@ Image Image::subimage(int startx, int starty, int w, int h) const {
 }
 
 // replace
-// Replaces the block of pixels starting at (row, col) with the image. Should not assume image fits on this image.
+// Replaces the block of pixels starting at (row, col) with the image. Should
+// not assume image fits on this image.
 void Image::replace(const Image& image, int startx, int starty) {
-  int imageWLimit = image.width() + startx;
-  int imageHLimit = image.height() + starty;
+  // Calculates where the foreground image will end within the background image.
+  int imageHLimit = image.height() + startx;
+  int imageWLimit = image.width() + starty;
+  int k, m;
 
+  // for loop to start from where to start replacing.
+  // if statement to make sure pixels are replaced within background image's
+  // boundaries.
   for (int i = startx; i < imageHLimit; i++) {
     for (int j = starty; j < imageWLimit; j++) {
-      Pixel pix = image.get(i, j);
-      set(i, j, pix);
+      if ((i < heightH) && (j < widthW)) {
+        k = i - startx;
+        m = j - starty;
+        Pixel pix = image.get(k, m);
+        set(i, j, pix);
+      }
     }
   }
 }
@@ -269,23 +287,26 @@ Image Image::darkest(const Image& other) const {
 }
 
 // gammaCorrect
-// Returns a copy of this image with the given gamma correction factor applied to it.
+// Returns a copy of this image with the given gamma correction factor applied
+// to it.
 Image Image::gammaCorrect(float gamma) const {
   Image result(widthW, heightH);
 
+  // for loop calculates gamma correction using gamma correction equation.
   for (int i = 0; i < heightH; i++) {
     for (int j = 0; j < widthW; j++) {
       Pixel pix = get(i, j);
 
-      // Finds the gamma exponent value
+      // Finds the gamma exponent value/
       float gammaExp = 1 / gamma;
 
-      // Uses gamma as a correction factor for red, green, and blue
+      // Uses gamma as a correction factor for red, green, and blue.
       float gammaRed = pow(((float)pix.r / 255), gammaExp);
       float gammaGreen = pow(((float)pix.g / 255), gammaExp);
       float gammaBlue = pow(((float)pix.b / 255), gammaExp);
 
-      // Scales back to pixel color range for pixel intensity by multiplying by max intensity (255)
+      // Scales back to pixel color range for pixel intensity by multiplying by
+      // max intensity (255).
       pix.r = gammaRed * 255;
       pix.g = gammaGreen * 255;
       pix.b = gammaBlue * 255;
@@ -298,19 +319,23 @@ Image Image::gammaCorrect(float gamma) const {
 }
 
 // alphaBlend
-// Returns a copy of this image with the other image blended with it by factor alpha. E.g. result.pixel = this.pixel * (1 - alpha) + other.pixel * alpha. Assumes other and this have the same dimensions.
+// Returns a copy of this image with the other image blended with it by factor
+// alpha. E.g. result.pixel = this.pixel * (1 - alpha) + other.pixel * alpha.
+// Assumes other and this have the same dimensions.
 Image Image::alphaBlend(const Image& other, float alpha) const {
   Image result(widthW, heightH);
 
+  // for loop for alpha blend by using alpha blend equation.
   for (int i = 0; i < heightH; i++) {
     for (int j = 0; j < widthW; j++) {
       Pixel thisPix = get(i, j);
       Pixel otherPix = other.get(i, j);
-      thisPix.r = ((float)thisPix.r * (1 - alpha)) + ((float)otherPix.r * alpha);
-      thisPix.g = ((float)thisPix.g * (1 - alpha)) + ((float)otherPix.g * alpha);
-      thisPix.b = ((float)thisPix.b * (1 - alpha)) + ((float)otherPix.b * alpha);
+      Pixel pix;
+      pix.r = ((float)thisPix.r * (1 - alpha)) + ((float)otherPix.r * alpha);
+      pix.g = ((float)thisPix.g * (1 - alpha)) + ((float)otherPix.g * alpha);
+      pix.b = ((float)thisPix.b * (1 - alpha)) + ((float)otherPix.b * alpha);
 
-      result.set(i, j, thisPix);
+      result.set(i, j, pix);
     }
   }
 
@@ -355,6 +380,6 @@ Image Image::bitmap(int size) const {
 }
 
 void Image::fill(const Pixel& c) {
-  }
+}
 
 }  // namespace agl
