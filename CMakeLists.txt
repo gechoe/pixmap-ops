@@ -33,22 +33,18 @@ elseif (APPLE)
   set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
 elseif (UNIX)
-
   set(OpenGL_GL_PREFERENCE  "GLVND")
   set(CMAKE_CXX_FLAGS "-Wall -g -std=c++14 -Wno-comment -Wno-sign-compare -Wno-reorder -Wno-unused-function")
   FIND_PACKAGE(OpenGL REQUIRED) 
   FIND_PACKAGE(GLEW REQUIRED)
-
   set(LIBRARY_DIRS
     /usr/X11R6/lib
     /usr/local/lib
     )
-
   include_directories(external/include /usr/local/include)
   add_definitions(-DUNIX)
   set(CORE GLEW glfw GL X11)
   set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
-
 endif()
 
 add_executable(pixmap_test src/pixmap_test.cpp src/image.cpp src/image.h)

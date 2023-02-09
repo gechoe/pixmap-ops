@@ -20,11 +20,23 @@
 #include "stb/stb_image.h"
 
 namespace agl {
+//Memory cleanup in other functions
+void Image::clean() {
+  if (stbiAlloc == false) {
+    delete[] pic;
+    pic = NULL;
+  } else {
+    STBI_FREE(pic);
+    pic = NULL;
+  }
+}
 
 // Default constructor
 Image::Image() {
   widthW = 20;
   heightH = 20;
+
+  this->clean();
   pic = new char[widthW * heightH * num_chan];
 }
 
@@ -32,6 +44,8 @@ Image::Image() {
 Image::Image(int width, int height)  {
   widthW = width;
   heightH = height;
+
+  this->clean();
   pic = new char[widthW * heightH * num_chan];
 }
 
@@ -40,7 +54,9 @@ Image::Image(const Image& orig) {
   widthW = orig.widthW;
   heightH = orig.heightH;
 
+  this->clean();
   pic = new char[widthW * heightH * num_chan];
+
   for (int i = 0; i < (widthW * heightH * num_chan); i++) {
     pic[i] = orig.pic[i];
   }
@@ -54,8 +70,10 @@ Image& Image::operator=(const Image& orig) {
 
   widthW = orig.widthW;
   heightH  = orig.heightH;
-   
+
+  this->clean();
   pic = new char[widthW * heightH * num_chan];
+
   for (int i = 0; i < (widthW * heightH * num_chan); i++) {
     pic[i] = orig.pic[i];
   }
@@ -65,7 +83,7 @@ Image& Image::operator=(const Image& orig) {
 
 // Destructor
 Image::~Image() {
-  delete pic;
+  this->clean();
 }
 
 // width
@@ -92,13 +110,17 @@ void Image::set(int width, int height, unsigned char* data) {
 bool Image::load(const std::string& filename, bool flip) {
   stbi_set_flip_vertically_on_load(flip);
 
+  this->clean();
   pic = (char*)stbi_load(filename.c_str(), &widthW, &heightH, &num_chan, des_chan);
-   
+  
+  stbiAlloc = true;
+
   if (pic == NULL) {
     printf("Error in loading the image\n");
       return false;
   }
 
+  // delete(pic);
   return true;
 }
 
@@ -270,7 +292,6 @@ Image Image::swirl() const {
   for (int i = 0; i < heightH; i++) {
     for (int j = 0; j < widthW; j++) {
       Pixel pix = get(i, j);
-      unsigned char holder = pix.r;
       pix.r = pix.g;
       pix.g = pix.b;
       pix.b = pix.r;

@@ -71,6 +71,9 @@ class Image {
    */
   void set(int width, int height, unsigned char* data);
 
+  // Memory clean up to use in other functions
+  void clean();
+
   /**
    * @brief Get the pixel at index (row, col)
    * @param row The row (value between 0 and height)
@@ -191,7 +194,8 @@ class Image {
  private:
    // todo
    int widthW, heightH, num_chan = 3, des_chan = 3;
-   char* pic;
+   char* pic = NULL;
+   bool stbiAlloc = false;
 };
 }  // namespace agl
 #endif  // AGL_IMAGE_H_
