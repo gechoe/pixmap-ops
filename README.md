@@ -4,7 +4,7 @@ Image manipulation demos based on the PPM image format.
 
 TODO: Add a representative image for your project here
 Representative Image - TV Buffering Colors on Earth:
-![Image_1](build/earth-tv-colors.png)
+![Image_1](images/earth-tv-colors.png)
 
 ## How to build
 
