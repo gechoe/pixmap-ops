@@ -13,6 +13,7 @@
 
 #include "image.h"
 
+#include <cstdlib>
 #include <cassert>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
@@ -192,53 +193,67 @@ Image Image::resize(int w, int h) const {
 // Returns a copy of the image flipped along the horizontal middle axis.
 Image Image::flipHorizontal() const {
   Image result(widthW, heightH);
-  int originalH = heightH - 1;
+  int changingW = widthW - 1;
 
   // for loop to flip image, for loop of width then height to make the flipping
   // horizontally by pixels easier.
   // Flipped by switching the ends first then switching and getting closer to
   // the middle then repeating.
-  for (int j = 0; j < widthW; j++) {
-    for (int i = 0; i < heightH / 2; i++) {
-      Pixel pix = get(i, j);
-      Pixel otherPix = get(originalH, j);
-      result.set(i, j, otherPix);
-      result.set(originalH, j, pix);
-      originalH--;
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW / 2; j++) {
+      Pixel pix = get(j, i);
+      Pixel otherPix = get(changingW, i);
+      result.set(j, i, otherPix);
+      result.set(changingW, i, pix);
+      changingW--;
     }
-    originalH = heightH - 1;
+    changingW = widthW - 1;
   }
 
   return result;
 }
 
 Image Image::flipVertical() const {
-  Image result(0, 0);
+  Image result(widthW, heightH);
+  int changingH = heightH - 1;
+
+  for (int i = 0; i < widthW; i++) {
+    for (int j = 0; j < heightH / 2; j++) {
+      Pixel pix = get(i, j);
+      Pixel otherPix = get(i, changingH);
+      result.set(i, j, otherPix);
+      result.set(i, changingH, pix);
+      changingH--;
+    }
+    changingH = heightH - 1;
+  }
+
   return result;
 }
 
 Image Image::rotate90() const {
   Image result(heightH, widthW);
-  int originalH = heightH - 1;
 
-  for (int i = 0; i < widthW; i++) {
-    for (int j = 0; j < heightH; j++) {
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
       Pixel pix = get(i, j);
       result.set(j, i, pix);
     }
   }
-
-  for (int j = 0; j < widthW; j++) {
-    for (int i = 0; i < heightH / 2; i++) {
-      Pixel pix = result.get(i, j);
-      Pixel otherPix = result.get(originalH, j);
-      result.set(i, j, otherPix);
-      result.set(originalH, j, pix);
-      originalH--;
-    }
-    originalH = heightH - 1;
-  }
   
+  int changingW = result.width() - 1;
+
+  for (int i = 0; i < result.height(); i++) {
+    for (int j = 0; j < result.width() / 2; j++) {
+      Pixel pix = result.get(j, i);
+      Pixel otherPix = result.get(changingW, i);
+      result.set(j, i, otherPix);
+      result.set(changingW, i, pix);
+      changingW--;
+    }
+    changingW = result.width() - 1;
+  }
+
   return result;
 }
 
@@ -304,37 +319,117 @@ Image Image::swirl() const {
 }
 
 Image Image::add(const Image& other) const {
-  Image result(0, 0);
-  
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel thisPix = get(i, j);
+      Pixel otherPix = other.get(i, j);
+      Pixel pix;
+      pix.r = thisPix.r + otherPix.r;
+      pix.g = thisPix.g + otherPix.g;
+      pix.b = thisPix.b + otherPix.b;
+
+      result.set(i, j, pix);
+    }
+  }
+
   return result;
 }
 
 Image Image::subtract(const Image& other) const {
   Image result(widthW, heightH);
-   
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel thisPix = get(i, j);
+      Pixel otherPix = other.get(i, j);
+      Pixel pix;
+      pix.r = thisPix.r - otherPix.r;
+      pix.g = thisPix.g - otherPix.g;
+      pix.b = thisPix.b - otherPix.b;
+
+      result.set(i, j, pix);
+    }
+  }
+  
   return result;
 }
 
 Image Image::multiply(const Image& other) const {
-  Image result(0, 0);
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel thisPix = get(i, j);
+      Pixel otherPix = other.get(i, j);
+      Pixel pix;
+      pix.r = thisPix.r * otherPix.r;
+      pix.g = thisPix.g * otherPix.g;
+      pix.b = thisPix.b * otherPix.b;
+
+      result.set(i, j, pix);
+    }
+  }
    
   return result;
 }
 
 Image Image::difference(const Image& other) const {
-  Image result(0, 0);
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel thisPix = get(i, j);
+      Pixel otherPix = other.get(i, j);
+      Pixel pix;
+      pix.r = abs(thisPix.r - otherPix.r);
+      pix.g = abs(thisPix.g - otherPix.g);
+      pix.b = abs(thisPix.b - otherPix.b);
+
+      result.set(i, j, pix);
+    }
+  }
   
   return result;
 }
 
 Image Image::lightest(const Image& other) const {
-  Image result(0, 0);
+  Image result(widthW, heightH);
+
+  // for loop for alpha blend by using alpha blend equation.
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel thisPix = get(i, j);
+      Pixel otherPix = other.get(i, j);
+      Pixel pix;
+      pix.r = fmax(thisPix.r, otherPix.r);
+      pix.g = fmax(thisPix.g, otherPix.g);
+      pix.b = fmax(thisPix.b, otherPix.b);
+
+      result.set(i, j, pix);
+    }
+  }
   
   return result;
 }
 
 Image Image::darkest(const Image& other) const {
-  Image result(0, 0);
+  Image result(widthW, heightH);
+
+  // for loop for alpha blend by using alpha blend equation.
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel thisPix = get(i, j);
+      Pixel otherPix = other.get(i, j);
+      Pixel pix;
+      pix.r = fmin(thisPix.r, otherPix.r);
+      pix.g = fmin(thisPix.g, otherPix.g);
+      pix.b = fmin(thisPix.b, otherPix.b);
+
+      result.set(i, j, pix);
+    }
+  }
   
   return result;
 }
@@ -431,8 +526,219 @@ Image Image::grayscale() const {
   return result;
 }
 
+// extractRed
+// Extract only the red color channel
+Image Image::extractRed() const {
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      pix.r = 0;
+         
+      result.set(i, j, pix);
+    }
+  }
+   
+  return result;
+}
+
+// extractGreen
+// Extract only the green color channel
+Image Image::extractGreen() const {
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      pix.g = 0;
+         
+      result.set(i, j, pix);
+    }
+  }
+   
+  return result;
+}
+
+// extractBlue
+// Extract only the blue color channel
+Image Image::extractBlue() const {
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      pix.b = 0;
+         
+      result.set(i, j, pix);
+    }
+  }
+   
+  return result;
+}
+
+// onlyRed
+// Keeps only the red color channel
+Image Image::onlyRed() const {
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      pix.g = 0, pix.b = 0;
+         
+      result.set(i, j, pix);
+    }
+  }
+   
+  return result;
+}
+
+// onlyGreen
+// Keep only the green color channel
+Image Image::onlyGreen() const {
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      pix.r = 0, pix.b = 0;
+         
+      result.set(i, j, pix);
+    }
+  }
+   
+  return result;
+}
+
+// onlyBlue
+// Extract only the blue color channel
+Image Image::onlyBlue() const {
+  Image result(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      pix.r = 0, pix.g = 0;
+         
+      result.set(i, j, pix);
+    }
+  }
+   
+  return result;
+}
+
+Image Image::border() const {
+  int borderSize;
+
+  if (widthW < heightH) {
+    borderSize = widthW * 0.1;
+  } else {
+    borderSize = heightH * 0.1;
+  }
+
+  if (borderSize == 0) {
+    borderSize = 1;
+  }
+
+  int newWidth = widthW + (borderSize * 2);
+  int newHeight = heightH + (borderSize * 2);
+  Image image(newWidth, newHeight);
+
+  int heightLimit = newHeight - borderSize;
+  int widthLimit = newWidth - borderSize;
+
+  for (int i = 0; i < newHeight ; i++) {
+    for (int j = 0; j < newWidth; j++)  {
+      if ((i <= borderSize) || (j <= borderSize) || (j >= widthLimit) || (i >= heightLimit)) {
+        Pixel border;
+        border.r = 0, border.g = 100, border.b = 100;
+        image.set(i, j, border);
+      }
+    }
+  }
+
+  for (int i = 0; i < heightH ; i++) {
+    for (int j = 0; j < widthW; j++)  {
+      Pixel pix = get(i, j);
+      image.set(i + borderSize, j + borderSize, pix);
+    }
+  }
+
+  return image;
+}
+
 Image Image::colorJitter(int size) const {
   Image image(0, 0);
+
+  return image;
+}
+
+Image Image::grainyEffect() const {
+  Image image(widthW, heightH);
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+      int random = rand() % 100;
+
+      pix.r = (255 - (float)pix.r) * ((float)random / 100) + (float)pix.r;
+      pix.g = (255 - (float)pix.g) * ((float)random / 100) + (float)pix.g;
+      pix.b = (255 - (float)pix.b) * ((float)random / 100) + (float)pix.b;
+
+      image.set(i, j, pix);
+    }
+  }
+
+  return image;
+}
+
+Image Image::tvcolors() const {
+  Image image(widthW, heightH);
+  int division = widthW / 8;
+  int bottomDivision = heightH - (2 * (heightH / 6));
+
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+
+      if (((j < division) && (i < bottomDivision)) || ((j > (7 * division)) && (i > bottomDivision))) {
+        pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
+        pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
+        pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
+      } else if (((j < (2 * division)) && (i < bottomDivision)) || ((j > (6 * division)) && (i > bottomDivision))) {
+        pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
+        pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
+        pix.b = (255 - (float)pix.b) * 0.10;
+      } else if (((j <  (3 * division)) && (i < bottomDivision)) || ((j > (5 * division)) && (i > bottomDivision))) {
+        pix.r = (255 - (float)pix.r) * 0.10;
+        pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
+        pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
+      } else if (((j <  (4 * division)) && (i < bottomDivision)) || ((j > (4 * division)) && (i > bottomDivision))) {
+        pix.r = (255 - (float)pix.r) * 0.10;
+        pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
+        pix.b = (255 - (float)pix.b) * 0.10;
+      } else if (((j <  (5 * division)) && (i < bottomDivision)) || ((j > (3 * division)) && (i > bottomDivision))) {
+        pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
+        pix.g = (255 - (float)pix.g) * 0.10;
+        pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
+      } else if (((j <  (6 * division)) && (i < bottomDivision)) || ((j > (2 * division)) && (i > bottomDivision))) {
+        pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
+        pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
+        pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
+      } else if (((j <  (7 * division)) && (i < bottomDivision)) || ((j > (division)) && (i > bottomDivision))) {
+        pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
+        pix.g = (255 - (float)pix.g) * 0.10;
+        pix.b = (255 - (float)pix.b) * 0.10;
+      } else {
+        pix.r = (255 - (float)pix.r) * 0.10;
+        pix.g = (255 - (float)pix.g) * 0.10;
+        pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
+      }
+
+      image.set(i, j, pix);
+    }
+  }
 
   return image;
 }
@@ -443,7 +749,66 @@ Image Image::bitmap(int size) const {
   return image;
 }
 
+Image Image::redDyePrint() const {
+  Image result(widthW, heightH);
+
+  // for loop for alpha blend by using alpha blend equation.
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+
+      pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
+      pix.g = (255 - (float)pix.g) * 0.10;
+      pix.b = (255 - (float)pix.b) * 0.10;
+
+      result.set(i, j, pix);
+    }
+  }
+
+  return result;
+}
+
+Image Image::greenDyePrint() const {
+  Image result(widthW, heightH);
+
+  // for loop for alpha blend by using alpha blend equation.
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+
+      pix.r = (255 - (float)pix.r) * 0.10;
+      pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
+      pix.b = (255 - (float)pix.b) * 0.10;
+
+      result.set(i, j, pix);
+    }
+  }
+
+  return result;
+}
+
+Image Image::blueDyePrint() const {
+  Image result(widthW, heightH);
+
+  // for loop for alpha blend by using alpha blend equation.
+  for (int i = 0; i < heightH; i++) {
+    for (int j = 0; j < widthW; j++) {
+      Pixel pix = get(i, j);
+
+      pix.r = (255 - (float)pix.r) * 0.10;
+      pix.g = (255 - (float)pix.g) * 0.10;
+      pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
+
+      result.set(i, j, pix);
+    }
+  }
+
+  return result;
+}
+
 void Image::fill(const Pixel& c) {
+
+
 }
 
 }  // namespace agl

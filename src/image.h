@@ -176,14 +176,53 @@ class Image {
   // Assumes that the two images are the same size
   Image alphaBlend(const Image& other, float amount) const;
 
+  // Creates a three-dimensional effect
+  Image threeDim() const;
+
+  // Applies a border around the image
+  Image border() const;
+
+  // Applies threeD to image
+  Image tvcolors() const;
+
+  // Applies red dye to image to make it red toned
+  Image redDyePrint() const;
+
+  // Applies green dye to image to make it green toned
+  Image greenDyePrint() const;
+
+  // Applies blue dye to image to make it blue toned
+  Image blueDyePrint() const;
+
   // Convert the image to grayscale
   Image invert() const;
 
   // Convert the image to grayscale
   Image grayscale() const;
 
+  // Extracting only the red color from all pixels
+  Image extractRed() const;
+
+  // Extracting only the red color from all pixels
+  Image extractGreen() const;
+
+  // Extracting only the red color from all pixels
+  Image extractBlue() const;
+
+   // Keeping only the red color from all pixels
+  Image onlyRed() const;
+
+  // Keeping only the red color from all pixels
+  Image onlyGreen() const;
+
+  // Keeping only the red color from all pixels
+  Image onlyBlue() const;
+
   // return a bitmap version of this image
   Image colorJitter(int size) const;
+
+  // Randomized the colors
+  Image grainyEffect() const;
 
   // return a bitmap version of this image
   Image bitmap(int size) const;
