@@ -650,7 +650,8 @@ Image Image::border() const {
 
   for (int i = 0; i < newHeight ; i++) {
     for (int j = 0; j < newWidth; j++)  {
-      if ((i <= borderSize) || (j <= borderSize) || (j >= widthLimit) || (i >= heightLimit)) {
+      if ((i <= borderSize) || (j <= borderSize) || (j >= widthLimit) ||
+        (i >= heightLimit)) {
         Pixel border;
         border.r = 0, border.g = 100, border.b = 100;
         image.set(i, j, border);
@@ -702,31 +703,38 @@ Image Image::tvcolors() const {
     for (int j = 0; j < widthW; j++) {
       Pixel pix = get(i, j);
 
-      if (((j < division) && (i < bottomDivision)) || ((j > (7 * division)) && (i > bottomDivision))) {
+      if (((j < division) && (i < bottomDivision)) || ((j > (7 * division)) &&
+        (i > bottomDivision))) {
         pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
         pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
         pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
-      } else if (((j < (2 * division)) && (i < bottomDivision)) || ((j > (6 * division)) && (i > bottomDivision))) {
+      } else if (((j < (2 * division)) && (i < bottomDivision)) ||
+        ((j > (6 * division)) && (i > bottomDivision))) {
         pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
         pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
         pix.b = (255 - (float)pix.b) * 0.10;
-      } else if (((j <  (3 * division)) && (i < bottomDivision)) || ((j > (5 * division)) && (i > bottomDivision))) {
+      } else if (((j <  (3 * division)) && (i < bottomDivision)) ||
+        ((j > (5 * division)) && (i > bottomDivision))) {
         pix.r = (255 - (float)pix.r) * 0.10;
         pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
         pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
-      } else if (((j <  (4 * division)) && (i < bottomDivision)) || ((j > (4 * division)) && (i > bottomDivision))) {
+      } else if (((j <  (4 * division)) && (i < bottomDivision)) ||
+        ((j > (4 * division)) && (i > bottomDivision))) {
         pix.r = (255 - (float)pix.r) * 0.10;
         pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
         pix.b = (255 - (float)pix.b) * 0.10;
-      } else if (((j <  (5 * division)) && (i < bottomDivision)) || ((j > (3 * division)) && (i > bottomDivision))) {
+      } else if (((j <  (5 * division)) && (i < bottomDivision)) ||
+        ((j > (3 * division)) && (i > bottomDivision))) {
         pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
         pix.g = (255 - (float)pix.g) * 0.10;
         pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
-      } else if (((j <  (6 * division)) && (i < bottomDivision)) || ((j > (2 * division)) && (i > bottomDivision))) {
+      } else if (((j <  (6 * division)) && (i < bottomDivision)) ||
+        ((j > (2 * division)) && (i > bottomDivision))) {
         pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
         pix.g = (255 - (float)pix.g) * 0.10 + (float)pix.g;
         pix.b = (255 - (float)pix.b) * 0.10 + (float)pix.b;
-      } else if (((j <  (7 * division)) && (i < bottomDivision)) || ((j > (division)) && (i > bottomDivision))) {
+      } else if (((j <  (7 * division)) && (i < bottomDivision)) ||
+        ((j > (division)) && (i > bottomDivision))) {
         pix.r = (255 - (float)pix.r) * 0.10 + (float)pix.r;
         pix.g = (255 - (float)pix.g) * 0.10;
         pix.b = (255 - (float)pix.b) * 0.10;
