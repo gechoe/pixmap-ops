@@ -78,17 +78,16 @@ Features:
 9. subtract - subtracts the pixel colors of two images:                         
 ![Image_9](images/feep-subtract.png)
 
-10. multiply - multiplies the pixel colors of two images:
-
+10. multiply - multiplies the pixel colors of two images:                              
 ![Image_10](images/feep-subtract.png)
 
-11. difference - find the abs difference of the pixel colors of two images: 
+11. difference - find the abs difference of the pixel colors of two images:                          
 ![Image_11](images/feep-difference.png)
 
-12. lightest - gets the max pixel colors of two images:
+12. lightest - gets the max pixel colors of two images:                            
 ![Image_12](images/feep-lightest.png)
 
-13. darkest - gets the min pixel colors of two images:
+13. darkest - gets the min pixel colors of two images:                            
 ![Image_13](images/feep-darkest.png)
 
 14. gammaCorrect - gammaCorrection is applied to the image:
