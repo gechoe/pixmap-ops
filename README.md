@@ -79,7 +79,7 @@ Features:
 ![Image_9](images/feep-subtract.png)
 
 10. multiply - multiplies the pixel colors of two images:                              
-![Image_10](images/feep-subtract.png)
+![Image_10](images/feep-multiply.png)
 
 11. difference - find the abs difference of the pixel colors of two images:                          
 ![Image_11](images/feep-difference.png)
